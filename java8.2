@@ -1,0 +1,110 @@
+
+import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+
+public class TipCalculator extends Application {
+
+    @Override
+    public void start(Stage stage) {
+
+        // Create GUI components
+        Label title = new Label("Tip Calculator");
+        Label billLabel = new Label("Bill Amount (₹):");
+
+        TextField billField = new TextField();
+        billField.setPromptText("Enter bill amount");
+
+        Label tipLabel = new Label("Tip Percentage:");
+
+        ComboBox<Integer> tipBox = new ComboBox<>();
+        tipBox.getItems().addAll(5, 10, 15, 20, 25);
+        tipBox.setValue(10);
+
+        Button calculateButton = new Button("Calculate Tip");
+        Button clearButton = new Button("Clear");
+
+        Label tipResult = new Label("Tip Amount: ₹0.00");
+        Label totalResult = new Label("Total Bill: ₹0.00");
+        Label message = new Label();
+
+        // Handle Calculate button click
+        calculateButton.setOnAction(event -> {
+            try {
+                double bill = Double.parseDouble(billField.getText());
+
+                if (bill < 0 || !Double.isFinite(bill)) {
+                    message.setText("Enter a valid bill amount.");
+                    return;
+                }
+
+                int percentage = tipBox.getValue();
+
+                double tip = bill * percentage / 100.0;
+                double total = bill + tip;
+
+                tipResult.setText(
+                    String.format("Tip Amount: ₹%.2f", tip)
+                );
+
+                totalResult.setText(
+                    String.format("Total Bill: ₹%.2f", total)
+                );
+
+                message.setText("Calculation successful!");
+
+            } catch (NumberFormatException e) {
+                message.setText("Please enter a valid number.");
+            }
+        });
+
+        // Handle Clear button click
+        clearButton.setOnAction(event -> {
+            billField.clear();
+            tipBox.setValue(10);
+            tipResult.setText("Tip Amount: ₹0.00");
+            totalResult.setText("Total Bill: ₹0.00");
+            message.setText("");
+        });
+
+        // Arrange buttons horizontally
+        HBox buttons = new HBox(10, calculateButton, clearButton);
+        buttons.setAlignment(Pos.CENTER);
+
+        // Arrange all components vertically
+        VBox root = new VBox(
+            12,
+            title,
+            billLabel,
+            billField,
+            tipLabel,
+            tipBox,
+            buttons,
+            tipResult,
+            totalResult,
+            message
+        );
+
+        root.setPadding(new Insets(20));
+        root.setAlignment(Pos.CENTER);
+
+        // Create scene and display window
+        Scene scene = new Scene(root, 350, 420);
+
+        stage.setTitle("JavaFX Tip Calculator");
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+}
